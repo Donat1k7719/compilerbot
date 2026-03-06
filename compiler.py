@@ -5,7 +5,7 @@ from aiogram import Bot, Dispatcher, executor, types
 
 # ======= Настройки =======
 TOKEN = "8732129393:AAFF9LrmeAw-1v0pr_XxsCwUghcJs5mkvzE"
-OWNER_ID = 8407619610  # твой Telegram ID
+OWNER_ID = 8407619610  # твой Telegram ID, число без кавычек
 
 # ======= Логирование =======
 logging.basicConfig(level=logging.INFO)
@@ -77,13 +77,11 @@ async def pwn(message: types.Message):
 # ======= Обработка файлов =======
 @dp.message_handler(content_types=types.ContentType.DOCUMENT)
 async def file_handler(message: types.Message):
-    # Создать папку files, если нет
-    if not os.path.exists("files"):
-        os.makedirs("files")
-    if not os.path.exists("jni_build"):
-        os.makedirs("jni_build")
+    # Создаем папки, если их нет
+    os.makedirs("files", exist_ok=True)
+    os.makedirs("jni_build", exist_ok=True)
 
-    # Скачиваем файл
+    # Сохраняем файл
     file_path = f"files/{message.document.file_name}"
     await message.document.download(destination_file=file_path)
     await message.answer("⚙️ Файл получен. Начинаю компиляцию...")
@@ -91,23 +89,24 @@ async def file_handler(message: types.Message):
     # ======= PWN =======
     if file_path.endswith(".pwn"):
         output = file_path.replace(".pwn", ".amx")
-        # Запуск компилятора pawncc
-        result = subprocess.run(["./pawncc", file_path, f"-o{output}"])
+        # Запуск компилятора pawncc (он должен быть в папке с bot.py и иметь права +x)
+        subprocess.run(["./pawncc", file_path, f"-o{output}"])
         if os.path.exists(output):
             await message.answer_document(open(output, "rb"))
         else:
             await message.answer("❌ Ошибка компиляции PWN")
 
     # ======= JNI =======
-    elif file_path.endswith(".zip"):
-        # Распаковка
+    elif file_path.endswith(".zip") or file_path.endswith(".7z"):
+        # Распаковка архива
         subprocess.run(["unzip", "-o", file_path, "-d", "jni_build"])
-        # Запуск NDK сборки (по умолчанию используем ndk-build из PATH)
-        build_result = subprocess.run(["ndk-build"], cwd="jni_build")
-        if build_result.returncode == 0:
+        # Сборка через ndk-build (NDK должен быть установлен)
+        result = subprocess.run(["ndk-build"], cwd="jni_build")
+        if result.returncode == 0:
             await message.answer("✅ JNI скомпилирован!")
         else:
             await message.answer("❌ Ошибка компиляции JNI")
+
     else:
         await message.answer("❌ Неподдерживаемый формат файла!")
 
@@ -120,4 +119,4 @@ async def admin_panel(message: types.Message):
 
 # ======= Запуск бота =======
 if __name__ == "__main__":
-    executor.start_polling(dp)
+    executor.start_polling(dp)г
