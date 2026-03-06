@@ -1,8 +1,8 @@
 import logging
 from aiogram import Bot, Dispatcher, executor, types
 
-TOKEN = "BOT_TOKEN"        # вставь токен бота
-OWNER_ID = 123456789      # вставь свой Telegram ID
+TOKEN = "8732129393:AAFF9LrmeAw-1v0pr_XxsCwUghcJs5mkvzE"        # вставь токен бота
+OWNER_ID = 8407619610      # вставь свой Telegram ID
 
 logging.basicConfig(level=logging.INFO)
 
