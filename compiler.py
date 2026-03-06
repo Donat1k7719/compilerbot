@@ -1,8 +1,8 @@
 import logging
 from aiogram import Bot, Dispatcher, executor, types
 
-TOKEN = "8732129393:AAFF9LrmeAw-1v0pr_XxsCwUghcJs5mkvzE"        # вставь токен бота
-OWNER_ID = 8407619610      # вставь свой Telegram ID
+TOKEN = "BOT_TOKEN"        # вставь токен бота
+OWNER_ID = 123456789      # вставь свой Telegram ID
 
 logging.basicConfig(level=logging.INFO)
 
@@ -30,17 +30,31 @@ def ndk_menu():
 @dp.message_handler(commands=["start"])
 async def start(message: types.Message):
 
-    text = (
-        "👋 Привет!\n"
-        "Ты в лучшем компиляторе JNI.\n\n"
-        "📊 Лимиты компиляций\n"
-        "🟢 Статус: Доступно\n"
-        "📈 Использовано: 0/5\n\n"
-        "📦 Отправь архив с JNI чтобы начать."
-    )
+    TOKEN = "8732129393:AAFF9LrmeAw-1v0pr_XxsCwUghcJs5mkvzE"
+OWNER_ID = 8407619610  # твой Telegram ID
 
-    await message.answer(text, reply_markup=main_menu())
+@dp.message_handler(commands=["start"])
+async def start(message: types.Message):
 
+    if message.from_user.id == OWNER_ID:
+        text = (
+            "👑 Привет, Администратор!\n\n"
+            "Ты в панели управления компилятором JNI.\n\n"
+            "📊 Лимиты компиляций\n"
+            "🟢 Статус: Доступно\n"
+            "📈 Использовано: 0/5"
+        )
+    else:
+        text = (
+            "👋 Привет!\n"
+            "Ты в лучшем компиляторе JNI.\n\n"
+            "📊 Лимиты компиляций\n"
+            "🟢 Статус: Доступно\n"
+            "📈 Использовано: 0/5\n\n"
+            "📦 Отправь архив с JNI чтобы начать."
+        )
+
+    await message.answer(text)
 
 @dp.message_handler(lambda message: message.text == "📦 Компилировать JNI")
 async def jni(message: types.Message):
