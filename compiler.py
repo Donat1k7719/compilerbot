@@ -1,8 +1,8 @@
 import logging
 from aiogram import Bot, Dispatcher, executor, types
 
-TOKEN = "BOT_TOKEN"        # вставь токен бота
-OWNER_ID = 123456789      # вставь свой Telegram ID
+TOKEN = "8732129393:AAFF9LrmeAw-1v0pr_XxsCwUghcJs5mkvzE"
+OWNER_ID = 8407619610  # твой Telegram ID
 
 logging.basicConfig(level=logging.INFO)
 
@@ -21,25 +21,18 @@ def main_menu():
 # меню NDK
 def ndk_menu():
     kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    kb.add("ndk-r25c")
-    kb.add("ndk-r21e")
-    kb.add("ndk-r16b")
+    kb.add("ndk-r25c", "ndk-r21e", "ndk-r16b")
     return kb
 
 
-@dp.message_handler(commands=["start"])
-async def start(message: types.Message):
-
-    TOKEN = "8732129393:AAFF9LrmeAw-1v0pr_XxsCwUghcJs5mkvzE"
-OWNER_ID = 8407619610  # твой Telegram ID
-
+# команда старт
 @dp.message_handler(commands=["start"])
 async def start(message: types.Message):
 
     if message.from_user.id == OWNER_ID:
         text = (
             "👑 Привет, Администратор!\n\n"
-            "Ты в панели управления компилятором JNI.\n\n"
+            "Ты владелец бота.\n\n"
             "📊 Лимиты компиляций\n"
             "🟢 Статус: Доступно\n"
             "📈 Использовано: 0/5"
@@ -54,7 +47,8 @@ async def start(message: types.Message):
             "📦 Отправь архив с JNI чтобы начать."
         )
 
-    await message.answer(text)
+    await message.answer(text, reply_markup=main_menu())
+
 
 @dp.message_handler(lambda message: message.text == "📦 Компилировать JNI")
 async def jni(message: types.Message):
@@ -90,26 +84,13 @@ async def pwn(message: types.Message):
     await message.answer(text)
 
 
-# когда пользователь отправляет файл
 @dp.message_handler(content_types=types.ContentType.DOCUMENT)
 async def file_handler(message: types.Message):
 
-    user_id = message.from_user.id
-
-    if user_id == OWNER_ID:
+    if message.from_user.id == OWNER_ID:
         await message.answer("👑 Файл получил владелец бота.")
     else:
         await message.answer("📥 Файл получен. Начинаю компиляцию...")
-
-
-# команда админа
-@dp.message_handler(commands=["admin"])
-async def admin_panel(message: types.Message):
-
-    if message.from_user.id != OWNER_ID:
-        return
-
-    await message.answer("👑 Панель администратора")
 
 
 if __name__ == "__main__":
